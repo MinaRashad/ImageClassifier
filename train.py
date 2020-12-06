@@ -105,7 +105,7 @@ for parm in model.parameters():
 # changing out features
 hidden = 4096 if arguments.hidden is None or  not int(arguments.hidden) else int(arguments.hidden)
 
-classifier = nn.Sequential( nn.Linear(25088, hidden) ,
+classifier = nn.Sequential( nn.Linear(model.classifier[0].in_features, hidden) ,
                        nn.ReLU(),
                        nn.Linear(hidden,int(arguments.out_features)),
                        nn.LogSoftmax(dim=1))
@@ -233,5 +233,6 @@ checkpoint = {
             'hidden_features':hidden,
             'out_features':int(arguments.out_features),
             'modelName':"vgg16" if arguments.arch not in available_models.keys() else arguments.arch,
-            'state_dict': model.state_dict()}
+            'state_dict': model.state_dict(),
+	    'class_to_idx':train_data.class_to_idx}
 torch.save(checkpoint,f"{chk_point}checkpoint.pth")

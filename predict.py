@@ -35,8 +35,8 @@ img_path = arguments.img
 checkpoint_path = arguments.checkpoint
 
 device =  torch.device("cuda:0" if (arguments.gpu and torch.cuda.is_available()) else "cpu")
-
-
+global 	maxK
+global class_to_idx
 def load_check_point(path):
     if torch.cuda.is_available():
         map_location=lambda storage, loc: storage.cuda()
@@ -45,13 +45,21 @@ def load_check_point(path):
     checkpoint = torch.load(path,map_location=map_location)
 
 
+    available_models = {'vgg16':models.vgg16,'vgg13':models.vgg13,'vgg11':models.vgg11}
+    last_model = available_models[checkpoint['modelName']](pretrained=True)
 
-    last_model = models.vgg16()
     for parm in last_model.parameters():
         parm.requireds_grad = False
 # changing out features
-
-    last_model.classifier.out_feature=checkpoint['out_features']
+    classifier = nn.Sequential( nn.Linear(checkpoint['in_features'], checkpoint['hidden_features']) ,
+                       nn.ReLU(),
+                       nn.Linear(checkpoint['hidden_features'],checkpoint['out_features']),
+                       nn.LogSoftmax(dim=1))
+    global maxK
+    global class_to_idx
+    maxK = checkpoint['out_features']
+    class_to_idx = checkpoint['class_to_idx']
+    last_model.classifier = classifier
     last_model.load_state_dict(checkpoint['state_dict'])
     
     return last_model
@@ -96,15 +104,15 @@ def predict(image_path, model, topk,categories):
     
     return np.exp(result.topk(topk)[0][0].tolist())*100,predicted_flowers
 
-default_cat = [str(i) for i in range(1,103)]
-default_cat.sort()
 
 if arguments.category_names is None:
-    cat_dic =  default_cat
+    keys =  class_to_idx.keys()
+    values = class_to_idx.values()
+    cat_dic = {v:k for k,v in zip(keys,values)}
 else:
     with open(arguments.category_names, 'r') as f:
         cat_dic = json.load(f)
-topk = 5 if (arguments.top_k is None) or not int(arguments.top_k) else int(arguments.top_k)
+topk = (5 if maxK >5 else maxK) if (arguments.top_k is None) or not int(arguments.top_k) else int(arguments.top_k)
 probs,classes = predict(img_path,model,topk,cat_dic)
 
 print("Results:")
