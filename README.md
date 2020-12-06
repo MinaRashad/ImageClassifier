@@ -10,6 +10,7 @@ To use it you need to follow these steps
 ## Step Zero: Initialization the environment 
 
 Install python3 on your computer
+
 download the files into an empty folder or 
 
 clone it with git with this command : 
