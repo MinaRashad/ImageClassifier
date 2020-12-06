@@ -155,4 +155,5 @@ Try downloading the source instead
 **It is taking lots of time!**
 
 if you are using a CPU .thats normal. Try running it on an NVIDIA GPU
+
 if you are using a GPU, Try reducing the epochs ,hidden units or change the arch to a less accurate version e.g. VGG11
