@@ -134,8 +134,11 @@ optional arguments:
 Important Arguments:
 
    **img** : The path of the image you want to check
+   
    **checkpoint** : the path of the checkpoint.pth produced by the `train.py`
+   
    **gpu**: You dont really need a GPU here but if you are going to do a massive amount of predictions its recommended
+   
    **topk**: the top **K** elements predicted. for example, top 10, top 5, top 1 ..etc
 
    example:
