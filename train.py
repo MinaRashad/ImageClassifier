@@ -83,9 +83,6 @@ train_dataloader = torch.utils.data.DataLoader(train_data, batch_size=64, shuffl
 valid_dataloader = torch.utils.data.DataLoader(valid_data, batch_size=64)
 test_dataloader = torch.utils.data.DataLoader(test_data, batch_size=64)
 
-
-with open('cat_to_name.json', 'r') as f:
-    cat_to_name = json.load(f)
     
 available_models = {'vgg16':models.vgg16,'vgg13':models.vgg13,'vgg11':models.vgg11}
 
