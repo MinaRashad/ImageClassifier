@@ -59,7 +59,7 @@ Now put distribute data as follows:
   
   3. put 10%-15% of data in the testing set
   
-  4.Never put images in the training or the validation that are in training
+  4. Never put images in the testing set or the validation set that are in training set
 
 ## Step Two: Training
 
@@ -93,7 +93,7 @@ optional arguments:
   
   **out_features** : Number of categories in your dataset, in this example is is either a dog or a cat so its 2
   
-  **save_dir** : Where you will save the checkpoint, the checkpoint is the result of training, you can called it "The AI itself"
+  **save_dir** : Where you will save the checkpoint, the checkpoint is the result of training, you can called it "The AI itself". You can leave it and the script will save it in the current folder
   
   **epochs** : number of times the script should loop through the dataset, it depends on the dataset. Making it to big it will result in overfitting and making it too small will result in underfitting. These will lead into a drop in accuracy. Luckly, the script is designed to prevent overfitting as it will save the state with highest accuracy but making a very big number (e.g. 1000) of epochs could make the training take a long amount of time. So choose it wisely or you can just not choose it and the script will choose 10 as default
 
@@ -104,8 +104,52 @@ optional arguments:
  Finally, your command should look like this:
  
  ```bash
- python3 train.py dataset 2 --save_dir=./ epochs=12 --gpu
+ python3 train.py ./dataset 2 --save_dir=./ epochs=12 --gpu
  ```
- After that you should wait
+ After that you should wait, firstly the script will download a VGG16 (depending on the arch argument) pretrained model that will forward its output features
  
+ When if finishes training, It should create a file in the current directory by default or in the path  "chechpoint.pth" which contain all the network. 
+ when typing the path, Make sure to put a forward slash "./" if you use linux or a backslash "\" on Windows.
+ 
+## Step Three: Pridection
+same as the `train.py`, you can type `python3 predict.py -h` and it will output this message:
 
+```
+usage: predict.py [-h] [--top_k TOP_K] [--category_names CATEGORY_NAMES]
+                  [--gpu]
+                  img checkpoint
+
+positional arguments:
+  img                   path to Image
+  checkpoint            path to checkpoint
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --top_k TOP_K         Specify the top_k, default 5
+  --category_names CATEGORY_NAMES
+                        path to category names, default *print the class name
+                        [the folder names]*
+  --gpu                 If you want to use a GPU
+```
+Important Arguments:
+
+   **img** : The path of the image you want to check
+   **checkpoint** : the path of the checkpoint.pth produced by the `train.py`
+   **gpu**: You dont really need a GPU here but if you are going to do a massive amount of predictions its recommended
+   **topk**: the top **K** elements predicted. for example, top 10, top 5, top 1 ..etc
+
+   example:
+ ```bash
+ python3 train.py /dataset/testing/cat/cute_cat122.png ./checkpoint.pth
+ ```
+
+## Troubleshooting
+
+**pip3 error when installing libraries!**
+
+Try downloading the source instead
+
+**It is taking lots of time!**
+
+if you are using a CPU .thats normal. Try running it on an NVIDIA GPU
+if you are using a GPU, Try reducing the epochs ,hidden units or change the arch to a less accurate version e.g. VGG11
